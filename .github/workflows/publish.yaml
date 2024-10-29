@@ -1,0 +1,27 @@
+name: publish to ghcr.io
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v3
+    - name: Inject slug/short variables
+      uses: rlespinasse/github-slug-action@v4
+    - run: echo ${GITHUB_SHA_SHORT}
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@v5
+      with:
+        name: jarededwards/action-test
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: ghcr.io
+        tags: ${{ env.GITHUB_SHA_SHORT }}
